@@ -1,0 +1,89 @@
+{
+	"ImportPath": "github.com/edot92/modbus_spm91",
+	"GoVersion": "go1.9",
+	"GodepVersion": "v79",
+	"Deps": [
+		{
+			"ImportPath": "github.com/appleboy/gin-jwt",
+			"Comment": "v2.3.1-11-g4ef6a7a",
+			"Rev": "4ef6a7a1574ad9f81f6ba45c4b74945f62e39a21"
+		},
+		{
+			"ImportPath": "github.com/gin-contrib/cors",
+			"Comment": "v1.2-8-g51f0ef8",
+			"Rev": "51f0ef8b07e973afb8b6c192bf90d5c3e575c01a"
+		},
+		{
+			"ImportPath": "github.com/gin-contrib/sse",
+			"Rev": "22d885f9ecc78bf4ee5d72b937e4bbcdc58e8cae"
+		},
+		{
+			"ImportPath": "github.com/gin-contrib/static",
+			"Rev": "e6b7eb92648d0a5faeea81700668a7a5dbe8424f"
+		},
+		{
+			"ImportPath": "github.com/gin-gonic/gin",
+			"Comment": "v1.2-122-g76ad15a",
+			"Rev": "76ad15ab32d000115cb7622a8317d7425dfc039c"
+		},
+		{
+			"ImportPath": "github.com/gin-gonic/gin/binding",
+			"Comment": "v1.2-122-g76ad15a",
+			"Rev": "76ad15ab32d000115cb7622a8317d7425dfc039c"
+		},
+		{
+			"ImportPath": "github.com/gin-gonic/gin/json",
+			"Comment": "v1.2-122-g76ad15a",
+			"Rev": "76ad15ab32d000115cb7622a8317d7425dfc039c"
+		},
+		{
+			"ImportPath": "github.com/gin-gonic/gin/render",
+			"Comment": "v1.2-122-g76ad15a",
+			"Rev": "76ad15ab32d000115cb7622a8317d7425dfc039c"
+		},
+		{
+			"ImportPath": "github.com/goburrow/modbus",
+			"Rev": "0d0a427beb37599ff34f8d74617af5ac403e9700"
+		},
+		{
+			"ImportPath": "github.com/goburrow/serial",
+			"Rev": "5efbe925ecf714f8ba147bf2226f2e7afc7111bc"
+		},
+		{
+			"ImportPath": "github.com/golang/protobuf/proto",
+			"Rev": "1643683e1b54a9e88ad26d98f81400c8c9d9f4f9"
+		},
+		{
+			"ImportPath": "github.com/json-iterator/go",
+			"Comment": "1.0.3-7-gaed5a81",
+			"Rev": "aed5a81f09330b8d254a117fb853e2f886f1cb3b"
+		},
+		{
+			"ImportPath": "github.com/mattn/go-isatty",
+			"Comment": "v0.0.3-1-ga5cdd64",
+			"Rev": "a5cdd64afdee435007ee3e9f6ed4684af949d568"
+		},
+		{
+			"ImportPath": "github.com/ugorji/go/codec",
+			"Rev": "50189f05eaf5a0c17e5084eb8f7fb91e23699840"
+		},
+		{
+			"ImportPath": "golang.org/x/sys/unix",
+			"Rev": "4cd6d1a821c7175768725b55ca82f14683a29ea4"
+		},
+		{
+			"ImportPath": "gopkg.in/dgrijalva/jwt-go.v3",
+			"Comment": "v3.1.0",
+			"Rev": "dbeaa9332f19a944acb5736b4456cfcc02140e29"
+		},
+		{
+			"ImportPath": "gopkg.in/go-playground/validator.v8",
+			"Comment": "v8.18.2",
+			"Rev": "5f1438d3fca68893a817e4a66806cea46a9e4ebf"
+		},
+		{
+			"ImportPath": "gopkg.in/yaml.v2",
+			"Rev": "eb3733d160e74a9c7e442f435eb3bea458e1d19f"
+		}
+	]
+}

@@ -2,16 +2,21 @@ package main
 
 import (
 	"encoding/binary"
+	"errors"
 	"fmt"
-	"log"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	jwt "github.com/appleboy/gin-jwt"
+	"github.com/gin-contrib/cors"
+	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
 	"github.com/goburrow/modbus"
 )
+
+var COMPORT string = "/dev/ttyUSB1"
 
 type structEnergyMeter struct {
 	Tegangan  string
@@ -25,17 +30,20 @@ var register [15]uint16
 var errModbus error
 var dataEnergyMeter structEnergyMeter
 
-func helloHandler(c *gin.Context) {
-	claims := jwt.ExtractClaims(c)
-	c.JSON(200, gin.H{
-		"userID": claims["id"],
-		"text":   "Hello World.",
-	})
-}
 func getEnergyMeter(c *gin.Context) {
-	claims := jwt.ExtractClaims(c)
+	if errModbus != nil {
+		c.JSON(200, gin.H{
+			"error": true,
+			// "userID":  claims["id"],
+			"message": errModbus.Error(),
+		})
+		return
+	}
+	// claims := jwt.ExtractClaims(c)
 	c.JSON(200, gin.H{
-		"userID":  claims["id"],
+		"error":   false,
+		"message": "data energy",
+		// "userID":  claims["id"],
 		"payload": dataEnergyMeter,
 	})
 }
@@ -44,16 +52,16 @@ func main() {
 	// http handler
 	gin.SetMode(gin.ReleaseMode)
 
-	port := os.Getenv("PORT")
+	portWeb := os.Getenv("PORT")
 	r := gin.New()
-	r.Use(gin.Logger())
+	// r.Use(gin.Logger())
 	r.Use(gin.Recovery())
-
-	if port == "" {
-		port = "8000"
+	r.Use(cors.Default())
+	if portWeb == "" {
+		portWeb = "9000"
 	}
 
-	// the jwt middleware
+	// jika pakai autentifikasi , sekarang tidak
 	authMiddleware := &jwt.GinJWTMiddleware{
 		Realm:      "test zone",
 		Key:        []byte("secret key"),
@@ -99,34 +107,44 @@ func main() {
 	}
 
 	r.POST("/login", authMiddleware.LoginHandler)
-
-	auth := r.Group("/api")
+	auth := r.Group("/auth")
 	auth.Use(authMiddleware.MiddlewareFunc())
 	{
-		auth.GET("/hello", helloHandler)
 		auth.GET("/refresh_token", authMiddleware.RefreshHandler)
 	}
+	/* end autentidfikasi */
+	r.GET("/api/energymeter", getEnergyMeter)
+	r.Use(static.Serve("/", static.LocalFile("dist", true)))
+	r.Use(static.Serve("/static", static.LocalFile("dist/static", true)))
 
-	r.GET("energymeter", getEnergyMeter)
-	go http.ListenAndServe(":"+port, r)
+	go http.ListenAndServe(":"+portWeb, r)
 
+	// thread serial modbus run
 	go func() {
 		for {
 		scanModbus:
-			time.Sleep(1 * time.Second)
+			time.Sleep(3 * time.Second)
 			// Modbus RTU/ASCII
-			handler := modbus.NewRTUClientHandler("/dev/ttyUSB0")
+			handler := modbus.NewRTUClientHandler(COMPORT)
 			handler.BaudRate = 9600
 			handler.DataBits = 8
 			handler.Parity = "N"
 			handler.StopBits = 1
 			handler.SlaveId = 1
-			handler.Timeout = 10 * time.Second
+			handler.Timeout = 5 * time.Second
 
 			err := handler.Connect()
 			if err != nil {
+				if strings.Contains(err.Error(), "no such file or directory") {
+					err = errors.New("KONEKSI PORT :" + COMPORT + " TIDAK SESUAI , silakan uabh konfigurasi COM PORT")
+				} else if strings.Contains(err.Error(), "timeout") {
+					handler.Close()
+					err = errors.New("Tidak ada respon dari alat , silakan cek konfigurasi COM PORT , dan koneksi ke power meter")
+				}
 				errModbus = err
-				log.Panic(err)
+				fmt.Println(errModbus)
+				time.Sleep(3 * time.Second)
+				goto scanModbus
 			}
 			defer handler.Close()
 			client := modbus.NewClient(handler)
@@ -135,13 +153,14 @@ func main() {
 				errModbus = err
 				fmt.Println(err.Error())
 				handler.Close()
+
 				goto scanModbus
 			}
-			dayaAktif := float64(float64(binary.LittleEndian.Uint16(resModbusByte[0:4])) * 0.1)
+			dayaAktif := float64(binary.BigEndian.Uint16(resModbusByte[0:4])) * 0.1
 			tegangan := float64(binary.BigEndian.Uint16(resModbusByte[4:6])) * 0.01
 			arus := float64(binary.BigEndian.Uint16(resModbusByte[6:10])) * 0.001
 			daya := float64(binary.BigEndian.Uint16(resModbusByte[10:13])) * 0.01
-			fmt.Println(resModbusByte)
+			// fmt.Println(resModbusByte)
 			// frekuensi := float64(binary.BigEndian.Uint16(resModbusByte[24:25])) * 0.01
 			dataEnergyMeter.DayaAktif = fmt.Sprintf("%2f", dayaAktif)
 			dataEnergyMeter.Tegangan = fmt.Sprintf("%2f", tegangan)
@@ -151,6 +170,7 @@ func main() {
 		}
 	}()
 
+	//* endless loop */
 	for {
 		time.Sleep(100 * time.Millisecond)
 	}
