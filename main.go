@@ -15,6 +15,7 @@ import (
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-ini/ini"
 	"github.com/goburrow/modbus"
+	"github.com/metakeule/fmtdate"
 	goSerial "go.bug.st/serial.v1"
 	ini "gopkg.in/ini.v1"
 )
@@ -49,12 +50,13 @@ func getEnergyMeter(c *gin.Context) {
 	})
 }
 func getAvalilablePORT(c *gin.Context) {
+
 	setPort, err := readKonfigurasiFile()
 	list, err := goSerial.GetPortsList()
 	if err != nil {
 		c.JSON(200, gin.H{
 			"error":   true,
-			"message": err.Error(),
+			"message": err.Error() + ", waktu:" + fmtdate.Format("hh-mm-ss DD-MM-YYYY", time.Now()),
 		})
 		return
 	}
@@ -83,7 +85,7 @@ func setPortDariWEB(c *gin.Context) {
 	if err != nil {
 		c.JSON(200, gin.H{
 			"error":   true,
-			"message": err.Error(),
+			"message": err.Error() + ", waktu:" + fmtdate.Format("hh-mm-ss DD-MM-YYYY", time.Now()),
 		})
 		return
 	}

@@ -73,6 +73,11 @@
 			"Rev": "a5cdd64afdee435007ee3e9f6ed4684af949d568"
 		},
 		{
+			"ImportPath": "github.com/metakeule/fmtdate",
+			"Comment": "v1.1.1-3-gdf8ae9d",
+			"Rev": "df8ae9daa6b01ee9c6c4f0b09638cf2f33f93510"
+		},
+		{
 			"ImportPath": "github.com/ugorji/go/codec",
 			"Rev": "50189f05eaf5a0c17e5084eb8f7fb91e23699840"
 		},
