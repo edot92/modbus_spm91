@@ -13,10 +13,11 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
+	_ "github.com/go-ini/ini"
 	"github.com/goburrow/modbus"
+	goSerial "go.bug.st/serial.v1"
+	ini "gopkg.in/ini.v1"
 )
-
-var COMPORT string = "/dev/ttyUSB1"
 
 type structEnergyMeter struct {
 	Tegangan  string
@@ -46,6 +47,61 @@ func getEnergyMeter(c *gin.Context) {
 		// "userID":  claims["id"],
 		"payload": dataEnergyMeter,
 	})
+}
+func getAvalilablePORT(c *gin.Context) {
+	setPort, err := readKonfigurasiFile()
+	list, err := goSerial.GetPortsList()
+	if err != nil {
+		c.JSON(200, gin.H{
+			"error":   true,
+			"message": err.Error(),
+		})
+		return
+	}
+	c.JSON(200, gin.H{
+		"error":   false,
+		"message": "list port yang tersedia",
+		// "userID":  claims["id"],
+		"payload": map[string]interface{}{
+			"portUsb": list,
+			"setPort": setPort,
+		},
+	})
+}
+func setPortDariWEB(c *gin.Context) {
+	portnya := c.Query("port")
+	cfg, err := ini.InsensitiveLoad("setting.ini")
+	if err != nil {
+		c.JSON(200, gin.H{
+			"error":   true,
+			"message": err.Error(),
+		})
+		return
+	}
+	cfg.Section("").Key("PORT").SetValue(portnya)
+	err = cfg.SaveTo("setting.ini")
+	if err != nil {
+		c.JSON(200, gin.H{
+			"error":   true,
+			"message": err.Error(),
+		})
+		return
+	}
+	c.JSON(200, gin.H{
+		"error":   false,
+		"message": "berhasil update",
+	})
+}
+func readKonfigurasiFile() (string, error) {
+	cfg, err := ini.InsensitiveLoad("setting.ini")
+	if err != nil {
+		return "", err
+	}
+	key, err := cfg.Section("").GetKey("PORT")
+	if err != nil {
+		return "", err
+	}
+	return key.String(), nil
 }
 func main() {
 
@@ -114,6 +170,9 @@ func main() {
 	}
 	/* end autentidfikasi */
 	r.GET("/api/energymeter", getEnergyMeter)
+	r.GET("/api/getport", getAvalilablePORT)
+	r.GET("/api/setport", setPortDariWEB)
+
 	r.Use(static.Serve("/", static.LocalFile("dist", true)))
 	r.Use(static.Serve("/static", static.LocalFile("dist/static", true)))
 
@@ -124,6 +183,12 @@ func main() {
 		for {
 		scanModbus:
 			time.Sleep(3 * time.Second)
+			COMPORT, err := readKonfigurasiFile()
+			if err != nil {
+				time.Sleep(3 * time.Second)
+				errModbus = err
+				goto scanModbus
+			}
 			// Modbus RTU/ASCII
 			handler := modbus.NewRTUClientHandler(COMPORT)
 			handler.BaudRate = 9600
@@ -132,11 +197,10 @@ func main() {
 			handler.StopBits = 1
 			handler.SlaveId = 1
 			handler.Timeout = 5 * time.Second
-
-			err := handler.Connect()
+			err = handler.Connect()
 			if err != nil {
 				if strings.Contains(err.Error(), "no such file or directory") {
-					err = errors.New("KONEKSI PORT :" + COMPORT + " TIDAK SESUAI , silakan uabh konfigurasi COM PORT")
+					err = errors.New("KONEKSI PORT :" + COMPORT + " TIDAK SESUAI , silakan ubah konfigurasi COM PORT")
 				} else if strings.Contains(err.Error(), "timeout") {
 					handler.Close()
 					err = errors.New("Tidak ada respon dari alat , silakan cek konfigurasi COM PORT , dan koneksi ke power meter")
