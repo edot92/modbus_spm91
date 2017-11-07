@@ -9,6 +9,10 @@
 			"Rev": "4ef6a7a1574ad9f81f6ba45c4b74945f62e39a21"
 		},
 		{
+			"ImportPath": "github.com/creack/goselect",
+			"Rev": "1bd5ca702c6154bccc56ecd598932ee8b295cab2"
+		},
+		{
 			"ImportPath": "github.com/gin-contrib/cors",
 			"Comment": "v1.2-8-g51f0ef8",
 			"Rev": "51f0ef8b07e973afb8b6c192bf90d5c3e575c01a"
@@ -42,6 +46,11 @@
 			"Rev": "76ad15ab32d000115cb7622a8317d7425dfc039c"
 		},
 		{
+			"ImportPath": "github.com/go-ini/ini",
+			"Comment": "v1.30.3",
+			"Rev": "f280b3ba517bf5fc98922624f21fb0e7a92adaec"
+		},
+		{
 			"ImportPath": "github.com/goburrow/modbus",
 			"Rev": "0d0a427beb37599ff34f8d74617af5ac403e9700"
 		},
@@ -68,8 +77,20 @@
 			"Rev": "50189f05eaf5a0c17e5084eb8f7fb91e23699840"
 		},
 		{
+			"ImportPath": "go.bug.st/serial.v1",
+			"Rev": "eae1344f9f90101f887b08d13391c34399f97873"
+		},
+		{
+			"ImportPath": "go.bug.st/serial.v1/unixutils",
+			"Rev": "eae1344f9f90101f887b08d13391c34399f97873"
+		},
+		{
 			"ImportPath": "golang.org/x/sys/unix",
-			"Rev": "4cd6d1a821c7175768725b55ca82f14683a29ea4"
+			"Rev": "314a259e304ff91bd6985da2a7149bbf91237993"
+		},
+		{
+			"ImportPath": "golang.org/x/sys/windows",
+			"Rev": "314a259e304ff91bd6985da2a7149bbf91237993"
 		},
 		{
 			"ImportPath": "gopkg.in/dgrijalva/jwt-go.v3",
@@ -80,6 +101,11 @@
 			"ImportPath": "gopkg.in/go-playground/validator.v8",
 			"Comment": "v8.18.2",
 			"Rev": "5f1438d3fca68893a817e4a66806cea46a9e4ebf"
+		},
+		{
+			"ImportPath": "gopkg.in/ini.v1",
+			"Comment": "v1.28.2",
+			"Rev": "20b96f641a5ea98f2f8619ff4f3e061cff4833bd"
 		},
 		{
 			"ImportPath": "gopkg.in/yaml.v2",
